@@ -2,8 +2,11 @@ package com.yohan.calculatorapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.HapticFeedbackConstants;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,10 +17,10 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class MainActivity extends Activity implements com.yohan.calculatorapp.OnCalculatorClickListener {
+    DatabaseHelper myDb;
 
-    // TextViews
+
     TextView calculatorText;
     TextView answerText;
 
@@ -45,11 +48,13 @@ public class MainActivity extends Activity implements com.yohan.calculatorapp.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Setting up TextViews for calculator display
+
         calculatorText = findViewById(R.id.calculator_text);
         calculatorText.setText(currentNumber.toString());
         inputNumbers.add(currentNumber);
         answerText = findViewById(R.id.answer_text);
+
+        myDb = new DatabaseHelper(this);
 
         initOperatorHashMaps();
         initToast();
@@ -72,6 +77,10 @@ public class MainActivity extends Activity implements com.yohan.calculatorapp.On
         CharSequence message = "Invalid Syntax";
         int duration = Toast.LENGTH_SHORT;
         toast = Toast.makeText(context, message, duration);
+    }
+    public void showHistory(View view) {
+        Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+        startActivity(intent);
     }
 
 
@@ -130,6 +139,7 @@ public class MainActivity extends Activity implements com.yohan.calculatorapp.On
                         answer = tempAnswer;
                         answered = true;
                         inputNumbers.set(currentNumberIndex, answer);
+                        myDb.insertData(calculatorText.getText().toString() + " = " + answer.toString());
                     } catch (ArithmeticException e) {
                         invalidSyntax();
                     }
@@ -229,5 +239,21 @@ public class MainActivity extends Activity implements com.yohan.calculatorapp.On
     private void invalidSyntax() {
         toast.cancel();
         toast.show();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_history) {
+            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

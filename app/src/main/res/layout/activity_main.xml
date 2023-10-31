@@ -26,6 +26,13 @@
             android:textAlignment="gravity"
             android:textColor="@color/white"
             android:textSize="20pt" />
+        <Button
+            android:id="@+id/history_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="History"
+            android:onClick="showHistory" />
+
 
         <FrameLayout
             android:id="@+id/answer_frame"
